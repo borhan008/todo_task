@@ -5,12 +5,17 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 
+const dbConnect = require("./config/dbConnect");
+const router = require("./routes/routes");
 dotenv.config();
 
 const app = express();
-
+dbConnect();
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/api", router);
+
 app.use(
   cors({
     origin: "http://localhost:3000",

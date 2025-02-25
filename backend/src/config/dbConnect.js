@@ -1,5 +1,4 @@
-import { connect } from "mongoose";
-
+const connect = require("mongoose").connect;
 const dbConnect = async () => {
   try {
     const connection = await connect(process.env.MONGO_URI);
@@ -10,4 +9,4 @@ const dbConnect = async () => {
   }
 };
 
-export default dbConnect;
+module.exports = dbConnect;
