@@ -14,24 +14,10 @@ dbConnect();
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(cors());
+
 app.use("/api", router);
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 365,
-    },
-  })
-);
 app.use(passport.initialize());
 app.use(passport.session());
 
