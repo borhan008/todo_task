@@ -139,8 +139,43 @@ const emailVerify = async (req, res) => {
   }
 };
 
+const twoFactorVerify = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("User not found");
+    console.log(email, otp);
+    const isOTPValid = speakeasy.totp.verify({
+      secret: user.twoFactorCode,
+      encoding: "base32",
+      token: otp,
+      window: 2,
+    });
+    if (!isOTPValid) throw new Error("Invalid OTP");
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "30d",
+      }
+    );
+    return res.status(200).json({
+      message: "OTP verified successfully",
+      name: user.name,
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      error: "Error while verifying OTP",
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
   emailVerify,
+  twoFactorVerify,
 };

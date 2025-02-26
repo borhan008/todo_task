@@ -10,6 +10,7 @@ export default function EmailVerify({message, setIsEmailVerified, email}) {
     const [error, setError] = useState('');
     const handleEmailVerify = async(e) => {
         e.preventDefault();
+        setError('');
 
         try {
             const response = await api.post('/auth/email/verify', {

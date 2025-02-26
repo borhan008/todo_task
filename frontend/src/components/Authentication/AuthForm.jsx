@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../../service/api';
 import Setup2FA from './Setup2FA';
 import EmailVerify from './EmailVerify';
-
+import TwoFaVerify from './TwoFaVerify';
 export default function AuthForm() {
     const [isRegistered, setIsRegistered] = useState(false);
 
@@ -17,6 +17,8 @@ export default function AuthForm() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [qrImage, setQrImage] = useState('');
+
+    const[name, setName] = useState('');
     const [isLoginSuccess, setIsLoginSuccess] = useState(false);
     const [isEmailVerified, setIsEmailVerified] = useState(false);
     
@@ -32,6 +34,7 @@ export default function AuthForm() {
         try {
             const response = await api.post('/auth/login', formData);
             setMessage(`Welcome ${response.data.name} , please check your email for verification code`);
+            setName(response.data.name);
             setIsLoginSuccess(true);
         } catch (error) {
             console.error('Error during login:', error);
@@ -71,7 +74,7 @@ export default function AuthForm() {
         <Paper elevation={3}
         sx={{ padding: 4}}>
      { 
-     isEmailVerified ? <> </> : 
+     isEmailVerified ? <TwoFaVerify  email={formData.email} name={name} /> : 
             isLoginSuccess ? <EmailVerify message={message} setIsEmailVerified={setIsEmailVerified} email={formData.email} /> :
             qrImage ?  <>
                 <Setup2FA qrImage={qrImage} />
