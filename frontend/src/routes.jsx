@@ -1,9 +1,10 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import Login from "./pages/Login";
 import Error from "./pages/Error";
 import Home from "./pages/Home";
 
 import ProtectedRoute from "./components/Authentication/ProtectedRoute";
+import Settings from "./pages/Settings";
 export const router = createBrowserRouter([
 
     {
@@ -13,13 +14,18 @@ export const router = createBrowserRouter([
     },
    
     {
-        element : <ProtectedRoute />,
+        element : <ProtectedRoute><Outlet /></ProtectedRoute>,
         children :[ 
             {
                 path : "/",
                 element : <Home />,
                 errorElement: <Error />
             },
+            {
+                path : "/settings",
+                element : <Settings />,
+                errorElement: <Error />
+            }
         ]   
     }
 

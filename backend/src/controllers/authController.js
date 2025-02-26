@@ -173,9 +173,21 @@ const twoFactorVerify = async (req, res) => {
   }
 };
 
+const getUser = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findById(decoded.id);
+  return res.status(200).json({
+    name: user.name,
+    email: user.email,
+    _id: user._id,
+  });
+};
+
 module.exports = {
   register,
   login,
   emailVerify,
   twoFactorVerify,
+  getUser,
 };
