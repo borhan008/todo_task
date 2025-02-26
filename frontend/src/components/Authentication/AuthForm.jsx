@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import api from '../../service/api';
 import Setup2FA from './Setup2FA';
+import EmailVerify from './EmailVerify';
 
 export default function AuthForm() {
     const [isRegistered, setIsRegistered] = useState(false);
@@ -16,20 +17,34 @@ export default function AuthForm() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
     const [qrImage, setQrImage] = useState('');
+    const [isLoginSuccess, setIsLoginSuccess] = useState(false);
+    const [isEmailVerified, setIsEmailVerified] = useState(false);
+    
 
-    const handleLogin = (e) => {
+    const handleLogin = async(e) => {
         e.preventDefault();
+        setError('');
         if(formData.email === '' || formData.password === '') {
            setError('Please fill all fields');
             return;
+        }
+
+        try {
+            const response = await api.post('/auth/login', formData);
+            setMessage(`Welcome ${response.data.name} , please check your email for verification code`);
+            setIsLoginSuccess(true);
+        } catch (error) {
+            console.error('Error during login:', error);
+            setError(error.response.data.message);
         }
     }
 
     const handleRegister = async(e) => {
         e.preventDefault();
+        setError('');
         if(formData.name === '' || formData.email === '' || formData.password === '') {
            setError('Please fill all fields');
-            return;
+           return;
         }
 
         try {
@@ -45,12 +60,25 @@ export default function AuthForm() {
     }
 
 
+    const handlePost2FaSetup = (e) => {
+        e.preventDefault();
+        setQrImage("");
+        setIsRegistered(true);
+    }
+
   return (
     <Container maxWidth="xs">
         <Paper elevation={3}
         sx={{ padding: 4}}>
-
-            {qrImage ?  <Setup2FA qrImage={qrImage} />  :  
+     { 
+     isEmailVerified ? <> </> : 
+            isLoginSuccess ? <EmailVerify message={message} setIsEmailVerified={setIsEmailVerified} email={formData.email} /> :
+            qrImage ?  <>
+                <Setup2FA qrImage={qrImage} />
+                <Typography component="p" variant="body2" className='text-center'>
+                    Now you can <Link to="" className='underline' onClick={handlePost2FaSetup}>login</Link> with your email and password.
+                </Typography>
+            </>  :  
             <>
 
                 <Typography component="h1" variant="h5" className='text-center font-bold'>
@@ -80,12 +108,15 @@ export default function AuthForm() {
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                     />
 
-                    <Button type='submit' variant='contained' color='primary' fullWidth>
+                    <Button type='submit' variant='contained' color='primary' fullWidth >
                         {isRegistered ? "Login" : "Register"}
                     </Button>
 
                 </Box>
-                {isRegistered ? <p>Already have an account? <Link to="" className='underline' onClick={() => setIsRegistered(false)}>Login</Link></p> : <p>Don't have a account ?  <Link to="" onClick={() => setIsRegistered(true)} className='underline'>Register</Link></p>}
+
+                <Typography component="p" variant="body3"  className='text-center pt-4'>
+                {!isRegistered ? <p>Already have an account? <Link to="" className='underline' onClick={() => setIsRegistered(true)}>Login</Link></p> : <p>Don't have an account ?  <Link to="" onClick={() => setIsRegistered(false)} className='underline'>Register</Link></p>}
+                </Typography>
             </>
             }
         </Paper>

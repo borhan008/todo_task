@@ -3,6 +3,7 @@ const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
+const sendMail = require("../utilities/emailSend");
 
 const register = async (req, res) => {
   try {
@@ -82,9 +83,25 @@ const login = async (req, res) => {
       });
     }
 
+    const otp = speakeasy.totp({
+      secret: process.env.TOTP_SECRET,
+      encoding: "base32",
+      step: 60 * 2,
+      window: 1,
+    });
+
+    const result = await sendMail(
+      user.email,
+      "OTP for login",
+      `Your OTP is ${otp}`
+    );
+
+    if (result.error) throw new Error("Error while sending email");
+    console.log(result);
     return res.status(200).json({
       message: "Login successful",
-      user,
+      name: user.name,
+      _id: user._id,
     });
   } catch (error) {
     res.status(500).json({
@@ -94,19 +111,36 @@ const login = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {};
+const emailVerify = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) throw new Error("User not found");
 
-const twoFactorSetup = async (req, res) => {};
+    const isOTPValid = speakeasy.totp.verifyDelta({
+      secret: process.env.TOTP_SECRET,
+      encoding: "base32",
+      token: otp,
+      window: 1,
+      step: 60 * 2,
+    });
+    if (!isOTPValid) throw new Error("Invalid OTP");
 
-const twoFactorVerify = async (req, res) => {};
-
-const twoFactorReset = async (req, res) => {};
+    return res.status(200).json({
+      message: "OTP verified successfully",
+      name: user.name,
+      _id: user._id,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      error: "Error while verifying OTP",
+    });
+  }
+};
 
 module.exports = {
   register,
   login,
-  logout,
-  twoFactorSetup,
-  twoFactorVerify,
-  twoFactorReset,
+  emailVerify,
 };
