@@ -23,9 +23,49 @@ export default function Home() {
     setTask(res.data.todos);
   };
 
+  const handleMarkAsCompleted = async(todo) => {
+    if(todo?._id){
+     try {
+      const res = await api.post(`/todo/update/${todo._id}`, {
+        status: 'Completed',
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      console.log(res.data);
+      setTask(task.filter(task => task._id !== todo._id));
+    } catch (error) {
+      console.log(error);
+     }
+    }
+    if(todo?.googleTaskID){
+      console.log(todo);
+     try {
+      const res = await api.post(`/todo/update/google/${todo.taskListID}/${todo.googleTaskID}`, {
+        status: 'Completed',
+        id: todo.googleTaskID,
+        taskListID: todo.taskListID,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setTask(task.filter(task => task.googleTaskID !== todo.googleTaskID));
+    } catch (error) {
+      console.log(error);
+     }
+    }
+  };
 
+  const handleDelete = async(todo) => {
+    const res = await api.delete(`/todo/delete/${todo.taskListID}/${todo._id}`);
+    console.log(res.data);
+  };
 
   return (
+
       <Container maxWidth="md">
 
         <Typography variant="h6" >
@@ -56,7 +96,7 @@ export default function Home() {
         {task.map((todo) => (<>
           
           <Box key={todo._id || todo.googleTaskID} 
-          className='my-4 flex justify-between'
+          className='py-4 px-2 flex justify-between hover:bg-gray-100'
           sx={
             {
               borderBottom: '1px solid #000',
@@ -67,15 +107,12 @@ export default function Home() {
             <div>
             <Typography variant="h6">{todo.title}</Typography>
             <Typography variant="body1">{todo.description}</Typography>
-            <Typography variant="body1">Time : {new Date(todo.dueDate).toLocaleTimeString()}</Typography>
-            <Typography variant="body1">Status : {todo.status}</Typography>
-
             </div>
             <div>
-              <IconButton>
+              <IconButton onClick={() => handleMarkAsCompleted(todo)}>
                 <TaskAltIcon/>
               </IconButton>
-              <IconButton>
+              <IconButton onClick={() => handleDelete(todo)}>
                 <DeleteIcon/>
               </IconButton>
             </div>

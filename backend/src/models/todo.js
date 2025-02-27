@@ -30,6 +30,11 @@ const todoSchema = new mongoose.Schema(
       required: false,
       default: null,
     },
+    taskListID: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   { timestamps: true }
 );

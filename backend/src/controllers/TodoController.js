@@ -9,10 +9,9 @@ dotenv.config();
 const getTodos = async (req, res) => {
   try {
     let dueDate = req.query.dueDate;
-    console.log(dueDate);
 
     let todos = await Todo.find(
-      { userId: req.user._id, dueDate: dueDate },
+      { userId: req.user._id, status: "Pending", dueDate: dueDate },
       {
         title: 1,
         description: 1,
@@ -20,6 +19,7 @@ const getTodos = async (req, res) => {
         status: 1,
         _id: 1,
         googleTaskID: 1,
+        taskListID: 1,
       }
     );
 
@@ -46,7 +46,6 @@ const getTodos = async (req, res) => {
         endOfDay.setUTCHours(23, 59, 59, 999);
 
         for (const taskList of taskLists.data.items) {
-          console.log(startOfDay, endOfDay);
           const allTasks = await tasks.tasks.list({
             tasklist: taskList.id,
             showCompleted: false,
@@ -54,19 +53,25 @@ const getTodos = async (req, res) => {
             dueMax: endOfDay,
           });
           for (const task of allTasks.data.items) {
-            if (todos.find((todo) => todo.googleTaskID === task.id)) {
+            if (
+              todos.find(
+                (todo) =>
+                  todo.googleTaskID === task.id &&
+                  todo.taskListID === taskList.id
+              )
+            ) {
             } else {
               tasksData.push({
                 title: task.title,
-                description: task.description,
+                description: task.notes,
                 dueDate: task.due,
                 status: task.status,
                 googleTaskID: task.id,
+                taskListID: taskList.id,
               });
             }
           }
         }
-        console.log(tasksData);
         todos = [...todos, ...tasksData];
       }
     }
@@ -86,20 +91,37 @@ const createTodo = async (req, res) => {
   try {
     const { title, description, dueDate, status } = req.body;
 
-    let googleTaskID = null;
+    let googleTaskID = null,
+      taskListID = null;
     if (req.user.googleId) {
       const accessToken = await generateAccessToken(req.user.refreshToken);
       if (accessToken) {
+        const auth = new google.auth.OAuth2();
+        auth.setCredentials({
+          access_token: accessToken,
+        });
         const tasks = await google.tasks({
           version: "v1",
-          auth: accessToken,
+          auth: auth,
         });
 
-        const taskLists = await tasks.tasklists.list();
-        console.log(taskLists);
+        const taskLists = await tasks.tasklists.list({
+          maxResults: 1,
+        });
+        taskListID = taskLists.data.items[0].id;
+        const task = await tasks.tasks.insert({
+          tasklist: taskListID,
+          requestBody: {
+            title: title,
+            notes: description,
+            due: new Date(dueDate).toISOString(),
+            status: "needsAction",
+          },
+        });
+        googleTaskID = task.data.id;
       }
     }
-
+    console.log(googleTaskID, taskListID);
     const todo = await Todo.create({
       title,
       description,
@@ -107,6 +129,7 @@ const createTodo = async (req, res) => {
       status,
       userId: req.user._id,
       googleTaskID: googleTaskID,
+      taskListID: taskListID,
     });
 
     return res
@@ -128,12 +151,54 @@ const updateTodo = async (req, res) => {
     if (!findTodo) {
       return res.status(404).json({ message: "Todo not found" });
     }
+
+    console.log(findTodo);
     findTodo.status = status;
     await findTodo.save();
 
     return res
       .status(200)
       .json({ message: "Todo updated successfully", todo: findTodo });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: error.message, error: "Error while updating todo" });
+  }
+};
+
+const updateGoogleTodo = async (req, res) => {
+  try {
+    const { id, taskListID } = req.params;
+    const { status } = req.body;
+    if (req.user.googleId) {
+      const accessToken = await generateAccessToken(req.user.refreshToken);
+      if (accessToken) {
+        const auth = new google.auth.OAuth2();
+        auth.setCredentials({
+          access_token: accessToken,
+        });
+        const tasks = await google.tasks({
+          version: "v1",
+          auth,
+        });
+        console.log(taskListID, id);
+        const task = await tasks.tasks.get({
+          tasklist: taskListID,
+          task: id,
+        });
+        const updatedTask = await tasks.tasks.update({
+          tasklist: taskListID,
+          task: id,
+          requestBody: {
+            ...task.data,
+            status: "completed",
+            completed: new Date().toISOString(),
+          },
+        });
+        console.log(updatedTask);
+      }
+    }
+    return res.status(200).json({ message: "Todo updated successfully" });
   } catch (error) {
     res
       .status(500)
@@ -156,4 +221,10 @@ const deleteTodo = async (req, res) => {
   }
 };
 
-module.exports = { getTodos, createTodo, updateTodo, deleteTodo };
+module.exports = {
+  getTodos,
+  createTodo,
+  updateTodo,
+  updateGoogleTodo,
+  deleteTodo,
+};

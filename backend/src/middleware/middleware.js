@@ -7,12 +7,13 @@ const verifyJWTToken = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const findUser = await User.findById(decoded.id);
 
-    if (!findUser) {
+    if (!(findUser.email == decoded.email)) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     req.user = findUser;
     next();
   } catch (error) {
+    console.log(req.headers.authorization);
     res.status(401).json({ message: "Unauthorized" });
   }
 };
