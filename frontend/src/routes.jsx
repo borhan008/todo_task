@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 
 import ProtectedRoute from "./components/Authentication/ProtectedRoute";
 import Settings from "./pages/Settings";
+import FailureAuth from "./pages/FailureAuth";
 export const router = createBrowserRouter([
 
     {
@@ -25,7 +26,12 @@ export const router = createBrowserRouter([
                 path : "/settings",
                 element : <Settings />,
                 errorElement: <Error />
-            }
+            },
+            {
+                path : "/auth/failed",
+                element : <FailureAuth />,
+                errorElement: <Error />
+            },
         ]   
     }
 

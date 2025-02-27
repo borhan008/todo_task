@@ -20,6 +20,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    googleId: {
+      type: String,
+      default: null,
+      required: false,
+    },
+    refreshToken: {
+      type: String,
+      default: null,
+      required: false,
+    },
+    accessToken: {
+      type: String,
+      default: null,
+      required: false,
+    },
   },
   { timestamps: true }
 );

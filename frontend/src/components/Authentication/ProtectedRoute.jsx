@@ -5,7 +5,7 @@ import Header from '../common/Header';
 
 export default function ProtectedRoute({children}) {
  const {user, loading} =  useAuth();
- return user ? (
+ return user.email ? (
     <>
     <Header />
     {children}

@@ -25,6 +25,7 @@ export const AuthProvider =  ({ children }) => {
          setUser({
           name: res.data.name,
           email: res.data.email,
+          connectedWithGoogle: res.data.connectedWithGoogle,
         _id: res.data._id,
          });
       } catch (error) {

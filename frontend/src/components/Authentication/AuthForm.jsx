@@ -5,6 +5,7 @@ import api from '../../service/api';
 import Setup2FA from './Setup2FA';
 import EmailVerify from './EmailVerify';
 import TwoFaVerify from './TwoFaVerify';
+
 export default function AuthForm() {
     const [isRegistered, setIsRegistered] = useState(false);
 

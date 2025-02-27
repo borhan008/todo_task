@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Typography, Box, TextField, Button } from '@mui/material';
 import api from '../../service/api';
+import { useNavigate } from 'react-router-dom';
 export default function TwoFaVerify({email, name}) {
 
 const [otp, setOtp] = useState('');
 const [error, setError] = useState('');
+const navigate = useNavigate();
 
 const handleSubmit = async(e) => {
     e.preventDefault();
@@ -17,6 +19,7 @@ const handleSubmit = async(e) => {
         console.log(response);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('name', response.data.name);
+        navigate('/');
     } catch (error) {
         console.error('Error during two factor verification:', error);
         setError('Invalid OTP. Please try again.');

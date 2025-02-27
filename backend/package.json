@@ -17,9 +17,11 @@
     "express-session": "^1.18.1",
     "googleapis": "^144.0.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.10.1",
+    "mongoose": "^8.10.2",
     "nodemailer": "^6.10.0",
     "passport": "^0.7.0",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-google-oauth20": "^2.0.0",
     "passport-local": "^1.0.0",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0"

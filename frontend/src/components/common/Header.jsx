@@ -16,7 +16,6 @@ import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
-const navItems = ['Home', 'Settings'];
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -25,6 +24,10 @@ export default function Header() {
     setMobileOpen((prevState) => !prevState);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+  }
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }}>
@@ -32,13 +35,21 @@ export default function Header() {
       </Typography>
       <Divider />
       <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item} />
+          <ListItem  disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} component={Link} to="/">
+              <ListItemText primary="Home" />
             </ListItemButton>
           </ListItem>
-        ))}
+          <ListItem  disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} component={Link} to="/settings">
+              <ListItemText primary="Settings" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem  disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={handleLogout}>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
       </List>
     </Box>
   );
@@ -65,11 +76,15 @@ export default function Header() {
            ToDos
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button component={Link} to={item === "Home" ? "/" : "/settings"} key={item} sx={{ color: '#fff' }}>
-                {item}
+              <Button component={Link} to="/"  sx={{ color: '#fff' }}>
+                Home
               </Button>
-            ))}
+              <Button component={Link} to="/settings"  sx={{ color: '#fff' }}>
+               Settings
+              </Button>
+              <Button onClick={handleLogout} sx={{ color: '#fff' }}>
+                Logout
+              </Button>
           </Box>
         </Toolbar>
       </AppBar>

@@ -16,10 +16,20 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors());
 
-app.use("/api", router);
-
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      secure: false,
+    },
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use("/api", router);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
