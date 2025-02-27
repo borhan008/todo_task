@@ -24,7 +24,8 @@ export default function Header() {
     setMobileOpen((prevState) => !prevState);
   };
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
     localStorage.removeItem('token');
   }
 
@@ -46,7 +47,7 @@ export default function Header() {
             </ListItemButton>
           </ListItem>
           <ListItem  disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }} onClick={handleLogout}>
+            <ListItemButton sx={{ textAlign: 'center' }} onClick={(e) => handleLogout(e)}>
               <ListItemText primary="Logout" />
             </ListItemButton>
           </ListItem>
@@ -82,7 +83,7 @@ export default function Header() {
               <Button component={Link} to="/settings"  sx={{ color: '#fff' }}>
                Settings
               </Button>
-              <Button onClick={handleLogout} sx={{ color: '#fff' }}>
+              <Button onClick={(e) => handleLogout(e)} sx={{ color: '#fff' }}>
                 Logout
               </Button>
           </Box>

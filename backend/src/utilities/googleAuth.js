@@ -17,13 +17,13 @@ passport.use(
     },
     async function (request, accessToken, refreshToken, profile, done) {
       const email = profile.emails[0].value;
-      const findUser = await User.findOne({ email });
-      if (findUser) {
-        findUser.accessToken = accessToken;
-        findUser.refreshToken = refreshToken;
-        findUser.googleId = profile.id;
-        await findUser.save();
-        return done(null, findUser);
+      const user = await User.findOne({ email });
+      if (user) {
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+        user.googleId = profile.id;
+        await user.save();
+        return done(null, { user, accessToken, refreshToken });
       } else {
         return done(null, false);
       }

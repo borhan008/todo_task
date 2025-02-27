@@ -16,9 +16,7 @@ const handleSubmit = async(e) => {
             otp: otp,
             email: email,
         });
-        console.log(response);
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('name', response.data.name);
         navigate('/');
     } catch (error) {
         console.error('Error during two factor verification:', error);

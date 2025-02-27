@@ -5,7 +5,7 @@ import { useAuth } from '../context/authContext';
 export default function Settings() {
   const {user, loading} = useAuth();
   const handleGoogleConnect = () => {
-    window.location.href = `http://localhost:5000/auth/google`;
+    window.location.href = import.meta.env.VITE_BACKEND_GOOGLE_URL;
   };
   
   return (

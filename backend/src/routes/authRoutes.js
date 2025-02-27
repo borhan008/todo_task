@@ -24,7 +24,9 @@ router.get("/user", getUser);
 router.get(
   "/google",
   passport.authenticate("google", {
-    scope: ["profile", "email", "https://www.googleapis.com/auth/calendar"],
+    scope: ["profile", "email", "https://www.googleapis.com/auth/tasks"],
+    accessType: "offline",
+    prompt: "consent",
   })
 );
 

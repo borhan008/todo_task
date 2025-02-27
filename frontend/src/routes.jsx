@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import ProtectedRoute from "./components/Authentication/ProtectedRoute";
 import Settings from "./pages/Settings";
 import FailureAuth from "./pages/FailureAuth";
+import AddTask from "./pages/AddTask";
 export const router = createBrowserRouter([
 
     {
@@ -30,6 +31,11 @@ export const router = createBrowserRouter([
             {
                 path : "/auth/failed",
                 element : <FailureAuth />,
+                errorElement: <Error />
+            },
+            {
+                path : "/add-task",
+                element : <AddTask />,
                 errorElement: <Error />
             },
         ]   
