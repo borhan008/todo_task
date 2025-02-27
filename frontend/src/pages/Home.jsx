@@ -60,8 +60,32 @@ export default function Home() {
   };
 
   const handleDelete = async(todo) => {
-    const res = await api.delete(`/todo/delete/${todo.taskListID}/${todo._id}`);
-    console.log(res.data);
+    if(todo?._id){
+      try {
+        const res = await api.delete(`/todo/delete/${todo._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        console.log(res.data);
+        setTask(task.filter(task => task._id !== todo._id));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if(todo?.googleTaskID){
+      try {
+        const res = await api.delete(`/todo/delete/google/${todo.taskListID}/${todo.googleTaskID}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        console.log(res.data);
+        setTask(task.filter(task => task.googleTaskID !== todo.googleTaskID));
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (

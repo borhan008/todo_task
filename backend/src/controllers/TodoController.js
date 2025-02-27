@@ -221,10 +221,39 @@ const deleteTodo = async (req, res) => {
   }
 };
 
+const deleteGoogleTodo = async (req, res) => {
+  try {
+    const { id, taskListID } = req.params;
+
+    const auth = new google.auth.OAuth2();
+    const accessToken = await generateAccessToken(req.user.refreshToken);
+    auth.setCredentials({
+      access_token: accessToken,
+    });
+    const tasks = await google.tasks({
+      version: "v1",
+      auth,
+    });
+    const deletedTodo = await tasks.tasks.delete({
+      tasklist: taskListID,
+      task: id,
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Todo deleted successfully", todo: deletedTodo });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: error.message, error: "Error while deleting todo" });
+  }
+};
+
 module.exports = {
   getTodos,
   createTodo,
   updateTodo,
   updateGoogleTodo,
   deleteTodo,
+  deleteGoogleTodo,
 };
