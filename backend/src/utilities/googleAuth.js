@@ -12,7 +12,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/api/auth/google/callback",
+      callbackURL: process.env.MAIL_REDIRECT_URL,
       passReqToCallback: true,
     },
     async function (request, accessToken, refreshToken, profile, done) {
