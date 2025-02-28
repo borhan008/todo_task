@@ -3,10 +3,11 @@ import api from "../service/api";
 import Loading from "../pages/Loading";
 const AuthContext = createContext();
 
+
+
 export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({});
-
   const fetchUser = async () => {
     if (localStorage.getItem("token") == null) {
       setLoading(false);
@@ -60,3 +61,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+// Dummy comment for updating in github
