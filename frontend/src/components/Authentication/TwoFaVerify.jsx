@@ -1,42 +1,77 @@
-import React, { useState } from 'react'
-import { Typography, Box, TextField, Button } from '@mui/material';
-import api from '../../service/api';
-import { useNavigate } from 'react-router-dom';
-export default function TwoFaVerify({email, name}) {
+import React, { useState } from "react";
+import {
+  Typography,
+  Box,
+  TextField,
+  Button,
+  Container,
+  Paper,
+} from "@mui/material";
+import api from "../../service/api";
+import { useNavigate } from "react-router-dom";
+import Loading from "../../pages/Loading";
+import { useAuth } from "../../context/authContext";
+export default function TwoFaVerify({ email, name }) {
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
-const [otp, setOtp] = useState('');
-const [error, setError] = useState('');
-const navigate = useNavigate();
-
-const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    try {
-        const response = await api.post('/auth/2fa/verify', {
-            otp: otp,
-            email: email,
-        });
-        localStorage.setItem('token', response.data.token);
-        navigate('/');
-    } catch (error) {
-        console.error('Error during two factor verification:', error);
-        setError('Invalid OTP. Please try again.');
-    }
+    setError("");
 
-}
+    setLoading(true);
+    try {
+      const response = await api.post("/auth/2fa/verify", {
+        otp: otp,
+        email: email,
+      });
+      setLoading(false);
+      signIn(response.data.token);
+    } catch (error) {
+      console.error("Error during two factor verification:", error);
+      setError("Invalid OTP. Please try again.");
+      setLoading(false);
+    }
+  };
   return (
-    <div>
-        <Typography component="h1" variant="h5" className='text-center font-bold'>
-                      Two Factor Verification
-          </Typography>
-          <Typography component="p" variant="body2" className='text-center'>
-            {name}, please check you authenticator app for the OTP.
-          </Typography> 
-           {error && <Typography component="p" variant="body2" className='text-center text-red-500'>
-            {error}
-           </Typography>} 
-          <Box component="form" onSubmit={handleSubmit}  sx={{ mt: 1 }}>
-                <TextField
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <Container
+          maxWidth="xs"
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Paper elevation={3} sx={{ padding: 4 }}>
+            <Typography
+              component="h1"
+              variant="h5"
+              className="text-center font-bold"
+            >
+              Two Factor Verification
+            </Typography>
+            <Typography component="p" variant="body2" className="text-center">
+              Hello <strong>{name}</strong>, please check you authenticator app
+              for the OTP.
+            </Typography>
+            {error && (
+              <Typography
+                component="p"
+                variant="body2"
+                className="text-center text-red-500"
+              >
+                {error}
+              </Typography>
+            )}
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              <TextField
                 variant="outlined"
                 margin="normal"
                 onChange={(e) => setOtp(e.target.value)}
@@ -46,17 +81,20 @@ const handleSubmit = async(e) => {
                 label="OTP"
                 name="otp"
                 autoFocus
-                />
+              />
 
-                <Button
+              <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                >Verify</Button>
-          </Box>
-         
-   
-    </div>
-  )
+              >
+                Verify
+              </Button>
+            </Box>
+          </Paper>
+        </Container>
+      )}
+    </>
+  );
 }

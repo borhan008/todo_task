@@ -1,62 +1,72 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import MenuIcon from '@mui/icons-material/Menu';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
-
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import CssBaseline from "@mui/material/CssBaseline";
+import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
 const drawerWidth = 240;
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
-
+  const { signOut } = useAuth();
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
-  const handleLogout = (e) => {
-    e.preventDefault();
-    localStorage.removeItem('token');
-  }
-
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
         ToDos
       </Typography>
       <Divider />
       <List>
-          <ListItem  disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }} component={Link} to="/">
-              <ListItemText primary="Home" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem  disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }} component={Link} to="/settings">
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem  disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }} onClick={(e) => handleLogout(e)}>
-              <ListItemText primary="Logout" />
-            </ListItemButton>
-          </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: "center" }} component={Link} to="/">
+            <ListItemText primary="Home" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{ textAlign: "center" }}
+            component={Link}
+            to="/add-task"
+          >
+            <ListItemText primary="Add Task" />
+          </ListItemButton>
+        </ListItem>
+        
+        <ListItem disablePadding>
+          <ListItemButton
+            sx={{ textAlign: "center" }}
+            component={Link}
+            to="/settings"
+          >
+            <ListItemText primary="Settings" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: "center" }} onClick={signOut}>
+            <ListItemText primary="Logout" />
+          </ListItemButton>
+        </ListItem>
       </List>
     </Box>
   );
 
   return (
-    <Box sx={{ display: 'flex', marginBottom: 12 }}>
+    <Box sx={{ display: "flex", marginBottom: 12 }}>
       <CssBaseline />
       <AppBar component="nav">
         <Toolbar>
@@ -65,50 +75,52 @@ export default function Header() {
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
+            sx={{ mr: 2, display: { sm: "none" } }}
           >
             <MenuIcon />
           </IconButton>
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-           ToDos
+            ToDos
           </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-              <Button component={Link} to="/"  sx={{ color: '#fff' }}>
-                Home
-              </Button>
-              <Button component={Link} to="/settings"  sx={{ color: '#fff' }}>
-               Settings
-              </Button>
-              <Button onClick={(e) => handleLogout(e)} sx={{ color: '#fff' }}>
-                Logout
-              </Button>
+          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+            <Button component={Link} to="/" sx={{ color: "#fff" }}>
+              Home
+            </Button>
+            <Button component={Link} to="/add-task" sx={{ color: "#fff" }}>
+              Add Task
+            </Button>
+            <Button component={Link} to="/settings" sx={{ color: "#fff" }}>
+              Settings
+            </Button>
+            <Button onClick={signOut} sx={{ color: "#fff" }}>
+              Logout
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
       <nav>
         <Drawer
-     
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true, 
           }}
           sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            display: { xs: "block", sm: "none" },
+            "& .MuiDrawer-paper": {
+              boxSizing: "border-box",
+              width: drawerWidth,
+            },
           }}
         >
           {drawer}
         </Drawer>
       </nav>
-   
     </Box>
   );
 }
-
-

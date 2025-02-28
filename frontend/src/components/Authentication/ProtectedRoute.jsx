@@ -1,17 +1,18 @@
-import React, { useEffect } from 'react'
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/authContext';
-import Header from '../common/Header';
+import React, { useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuth } from "../../context/authContext";
+import Header from "../common/Header";
 
-export default function ProtectedRoute({children}) {
+export default function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth();
+  console.log("loading", loading);
 
-   const {user, loading} =  useAuth();
-   console.log("loading", loading);
-
- return loading ? "Loading..." :   user.email ? (
+  return user.email ? (
     <>
-    <Header />
-    {children}
+      <Header />
+      {children}
     </>
- ) : <Navigate to="/login" />;
+  ) : (
+    <Navigate to="/login" />
+  );
 }
