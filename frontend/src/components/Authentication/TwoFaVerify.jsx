@@ -11,6 +11,7 @@ import api from "../../service/api";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../pages/Loading";
 import { useAuth } from "../../context/authContext";
+import {toast} from "react-hot-toast";
 export default function TwoFaVerify({ email, name }) {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
