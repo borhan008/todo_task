@@ -7,6 +7,7 @@ import api from "../service/api";
 import TaskAltIcon from "@mui/icons-material/TaskAlt";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Loading from "./Loading";
+import { toast } from "react-hot-toast";
 export default function Home() {
   const [dueDate, setDueDate] = useState("");
   const [task, setTask] = useState([]);
@@ -14,17 +15,24 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!dueDate) {
+      toast.error("Please select a due date");
       return;
     }
     setLoading(true);
-    const res = await api.get(`/todo/get?dueDate=${dueDate}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-    console.log(res.data.todos);
-    setTask(res.data.todos);
-    setLoading(false);
+    try {
+      const res = await api.get(`/todo/get?dueDate=${dueDate}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log(res.data.todos);
+      setTask(res.data.todos);
+      setLoading(false);
+      toast.success(`${res.data.todos.length} tasks found for ${dueDate}`);
+    } catch (error) {
+      setLoading(true);
+      toast.error("Something went wrong");
+    }
   };
 
   const handleMarkAsCompleted = async (todo) => {
@@ -45,9 +53,11 @@ export default function Home() {
         console.log(res.data);
         setTask(task.filter((task) => task._id !== todo._id));
         setLoading(false);
+        toast.success("Task marked as completed in ToDos");
       } catch (error) {
         console.log(error);
         setLoading(false);
+        toast.error("Something went wrong in ToDos");
       }
     }
     if (todo?.googleTaskID) {
@@ -69,9 +79,11 @@ export default function Home() {
         );
         setTask(task.filter((task) => task.googleTaskID !== todo.googleTaskID));
         setLoading(false);
+        toast.success("Task marked as completed in Google Tasks");
       } catch (error) {
         console.log(error);
         setLoading(false);
+        toast.error("Something went wrong in Google Tasks");
       }
     }
   };
@@ -88,9 +100,11 @@ export default function Home() {
         console.log(res.data);
         setLoading(false);
         setTask(task.filter((task) => task._id !== todo._id));
+        toast.success("Task deleted from ToDos");
       } catch (error) {
         console.log(error);
         setLoading(false);
+        toast.error("Something went wrong in ToDos");
       }
     }
     if (todo?.googleTaskID) {
@@ -107,9 +121,11 @@ export default function Home() {
         console.log(res.data);
         setLoading(false);
         setTask(task.filter((task) => task.googleTaskID !== todo.googleTaskID));
+        toast.success("Task deleted from Google Tasks");
       } catch (error) {
         console.log(error);
         setLoading(false);
+        toast.error("Something went wrong in Google Tasks");
       }
     }
   };

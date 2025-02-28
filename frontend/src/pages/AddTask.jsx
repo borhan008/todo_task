@@ -17,6 +17,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Loading from "./Loading";
+import { toast } from "react-hot-toast";
 
 export default function AddTask() {
   const [formData, setFormData] = useState({
@@ -46,9 +47,11 @@ export default function AddTask() {
         status: "Pending",
       });
       setLoading(false);
+      toast.success("Task created successfully");
     } catch (error) {
       console.log(error);
       setLoading(false);
+      toast.error("Something went wrong");
     }
   };
   return (

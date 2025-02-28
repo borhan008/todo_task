@@ -13,6 +13,7 @@ import Setup2FA from "./Setup2FA";
 import EmailVerify from "./EmailVerify";
 import TwoFaVerify from "./TwoFaVerify";
 import Loading from "../../pages/Loading";
+import toast from "react-hot-toast";
 export default function AuthForm() {
   const [loading, setLoading] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
@@ -47,10 +48,12 @@ export default function AuthForm() {
       );
       setName(response.data.name);
       setIsLoginSuccess(true);
+      toast.success(`Welcome ${response.data.name} , please check your email for verification code`);
       setLoading(false);
     } catch (error) {
       console.error("Error during login:", error);
       setError(error.response.data.message);
+      toast.error(error.response.data.message);
       setLoading(false);
     }
   };
@@ -65,6 +68,8 @@ export default function AuthForm() {
       formData.password === ""
     ) {
       setError("Please fill all fields");
+      toast.error("Please fill all fields");
+      setLoading(false);
       return;
     }
 
@@ -72,10 +77,12 @@ export default function AuthForm() {
       const response = await api.post("/auth/register", formData);
       setQrImage(response.data.qrImage);
       setLoading(false);
+      toast.success("Scan the QR code to setup 2FA");
     } catch (error) {
       console.error("Error during registration:", error);
       setError(error.response.data.message);
       setLoading(false);
+      toast.error(error.response.data.message);
     }
 
     console.log("Register");

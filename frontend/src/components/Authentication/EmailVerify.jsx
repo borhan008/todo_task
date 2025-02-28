@@ -10,7 +10,7 @@ import {
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import api from "../../service/api";
-
+import { toast } from "react-hot-toast";
 export default function EmailVerify({ message, setIsEmailVerified, email }) {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState("");
@@ -27,10 +27,12 @@ export default function EmailVerify({ message, setIsEmailVerified, email }) {
       console.log(response);
       setIsEmailVerified(true);
       setLoading(false);
+      toast.success("Email verified successfully");
     } catch (error) {
       console.error("Error during email verification:", error);
       setError("Invalid OTP. Please try again.");
       setLoading(false);
+      toast.error("Invalid OTP. Please try again.");
     }
   };
   return (

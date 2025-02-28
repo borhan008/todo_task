@@ -29,9 +29,11 @@ export default function TwoFaVerify({ email, name }) {
       });
       setLoading(false);
       signIn(response.data.token);
+      toast.success("Welcome back.");
     } catch (error) {
       console.error("Error during two factor verification:", error);
       setError("Invalid OTP. Please try again.");
+      toast.error("Invalid OTP. Please try again.");
       setLoading(false);
     }
   };

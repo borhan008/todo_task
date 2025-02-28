@@ -5,16 +5,17 @@ import './App.css'
 import {router} from './routes';
 import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/authContext';
+import { Toaster } from 'react-hot-toast';
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <AuthProvider>
        <RouterProvider router={router} />
+
+        <Toaster />
       </AuthProvider>
     </>
-  )
+  );
 }
 
 export default App
